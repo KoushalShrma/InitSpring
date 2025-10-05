@@ -1,0 +1,5 @@
+{
+  "name": "InitSpring",
+  "description": "The next-generation Spring Initializr. AI-powered to generate complete Spring Boot projects, including JPA entities and repositories, from natural language, SQL schemas, or ER diagrams.",
+  "requestFramePermissions": []
+}
