@@ -372,10 +372,43 @@ export const generateProjectCode = async (
                 }
             }
             
+            // Strategy 3: Look for code blocks with JSON (```json ... ```)
+            if (!extracted && responseText.includes('```')) {
+                const jsonBlockMatch = responseText.match(/```(?:json)?\s*(\[[\s\S]*?\])\s*```/);
+                if (jsonBlockMatch && jsonBlockMatch[1]) {
+                    try {
+                        parsed = JSON.parse(jsonBlockMatch[1]);
+                        console.log("Successfully extracted JSON from code block (Strategy 3)");
+                        extracted = true;
+                    } catch (e3) {
+                        console.warn("Strategy 3 failed");
+                    }
+                }
+            }
+            
+            // Strategy 4: Try to find any valid array in the response (more aggressive)
+            if (!extracted) {
+                const possibleArrays = responseText.match(/\[\s*\{[\s\S]*?\}\s*\]/g);
+                if (possibleArrays) {
+                    for (const possibleArray of possibleArrays) {
+                        try {
+                            parsed = JSON.parse(possibleArray);
+                            console.log("Successfully extracted JSON array (Strategy 4)");
+                            extracted = true;
+                            break;
+                        } catch (e4) {
+                            continue;
+                        }
+                    }
+                }
+            }
+            
             if (!extracted) {
                 console.error("JSON Parse Error:", jsonError);
-                console.error("Response text (first 1000 chars):", responseText.substring(0, 1000));
-                throw new Error(`Invalid JSON response from AI. Could not extract valid array. Preview: ${responseText.substring(0, 300)}...`);
+                console.error("Response text (first 2000 chars):", responseText.substring(0, 2000));
+                console.error("Response contains '[' at:", responseText.indexOf('['));
+                console.error("Response contains ']' at:", responseText.lastIndexOf(']'));
+                throw new Error(`Invalid JSON response from AI. The model returned text that doesn't contain a valid JSON array. This might be an image the model couldn't interpret. Try with a clearer image or use text/SQL input instead. Preview: ${responseText.substring(0, 500)}...`);
             }
         }
         
