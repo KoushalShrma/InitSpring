@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-neon: #00F5D4;
+  --color-dark-bg: #0D1117;
+  --color-dark-card: #161B22;
+  --color-dark-border: #30363D;
+  --color-dark-text: #C9D1D9;
+  --color-dark-text-secondary: #8B949E;
+  
+  --font-sans: 'Inter', sans-serif;
+  --font-mono: 'Fira Code', monospace;
+}
+
+body {
+  font-family: var(--font-sans);
+}
